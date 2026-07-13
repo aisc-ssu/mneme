@@ -174,7 +174,11 @@
 <h2>How mneme Finds Vulnerabilities</h2>
 
 <p>
-  Each worker follows a structured solve doctrine for every assigned task, designed to maximize the probability of reaching and triggering the described vulnerability within a single trial.
+  mneme uses a two-phase approach. First, an Opus 4.6 scout agent performs reconnaissance on the target codebase — reading the harness source, identifying the input contract, locating the sink function, and retrieving relevant OKF policies. The scout produces a structured analysis that is then handed off to the solve workers. Each worker follows a structured solve doctrine, informed by the scout's findings, to maximize the probability of reaching and triggering the described vulnerability within a single trial.
+</p>
+
+<p>
+  During analysis and PoC construction, workers leverage a set of binary analysis tool skills: angr for static reachability analysis, construct for declarative binary format building, gdb for dynamic debugging inside the vulnerable container, hexview for structured inspection of seed files and candidates, and pwntools for low-level binary manipulation and payload construction.
 </p>
 
 <h3>Solve Doctrine</h3>
