@@ -19,15 +19,14 @@
 
   body {
     font-family: var(--font);
-    font-size: 17px;
-    line-height: 1.75;
+    font-size: 16px;
+    line-height: 1.8;
     color: var(--fg);
     background: var(--bg);
     -webkit-font-smoothing: antialiased;
   }
 
   .banner {
-    position: relative;
     width: 100%;
     height: 280px;
     background: url('banner.jpg') center/cover no-repeat;
@@ -36,25 +35,20 @@
     justify-content: center;
   }
   .banner-overlay {
-    position: relative;
-    z-index: 1;
     text-align: center;
     color: #fff;
     padding: 0 24px;
   }
   .banner-overlay h1 {
-    font-family: var(--font);
     font-size: clamp(22px, 4vw, 34px);
     font-weight: 700;
     line-height: 1.3;
-    letter-spacing: -0.01em;
     margin-bottom: 8px;
     text-shadow: 0 2px 20px rgba(0,0,0,0.5);
   }
   .banner-overlay p {
     font-size: 15px;
-    opacity: 0.7;
-    font-style: italic;
+    opacity: 0.75;
   }
 
   .content {
@@ -64,32 +58,22 @@
   }
 
   h2 {
-    font-size: 22px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 600;
     margin: 48px 0 16px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--rule);
   }
   h3 {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 17px;
+    font-weight: 600;
     margin: 32px 0 12px;
   }
 
   p { margin-bottom: 16px; }
-  strong { font-weight: 700; }
-  em { font-style: italic; }
 
   ul, ol { padding-left: 1.4em; margin-bottom: 16px; }
   li { margin-bottom: 4px; }
-
-  code {
-    font-family: 'SF Mono', Consolas, 'Courier New', monospace;
-    font-size: 0.88em;
-    background: var(--table-head);
-    padding: 1px 5px;
-    border-radius: 2px;
-  }
 
   .table-wrap { overflow-x: auto; margin: 20px 0; }
   table {
@@ -100,10 +84,10 @@
   }
   thead { background: var(--table-head); }
   th {
-    font-weight: 700;
+    font-weight: 600;
     text-align: left;
     padding: 8px 12px;
-    border-bottom: 2px solid var(--fg);
+    border-bottom: 2px solid var(--rule);
     font-size: 14px;
   }
   td {
@@ -113,24 +97,26 @@
   }
   tr:last-child td { border-bottom: none; }
   td.r { text-align: right; }
-  tr.hl td { font-weight: 700; }
+  tr.hl td { font-weight: 600; }
 
   .meta {
     color: var(--fg2);
     font-size: 15px;
     margin-bottom: 32px;
-    font-style: italic;
   }
 
   .foot {
     margin-top: 64px;
-    padding-top: 16px;
+    padding-top: 20px;
     border-top: 1px solid var(--rule);
-    font-size: 14px;
+    font-size: 13px;
     color: var(--fg2);
-    line-height: 1.6;
+    line-height: 1.7;
   }
-  .foot a { color: var(--fg2); }
+  .foot a { color: var(--fg2); text-decoration: none; }
+  .foot a:hover { text-decoration: underline; }
+  .foot-org { margin-bottom: 12px; }
+  .foot-trial { margin-top: 12px; }
 
   @media (max-width: 600px) {
     .banner { height: 200px; }
@@ -154,7 +140,7 @@
 <p class="meta">July 2026 &middot; Model: Claude Opus 4.6 &middot; Single trial (pass@1) &middot; Zero internet access</p>
 
 <p>
-  <strong>mneme</strong> solved <strong>1,372 of 1,507</strong> CyberGym Level 1 tasks in a single trial, achieving <strong>91.0% pass@1</strong>. The raw server-positive score before conservative self-auditing is 1,403/1,507 (93.1%).
+  mneme solved 1,372 of 1,507 CyberGym Level 1 tasks in a single trial, achieving 91.0% pass@1. The raw server-positive score before conservative self-auditing is 1,403/1,507 (93.1%).
 </p>
 
 <p>
@@ -164,15 +150,15 @@
 <h2>System Architecture</h2>
 
 <p>
-  mneme (Greek: <em>mneme</em>, "memory") is built on the premise that vulnerability reproduction is a <em>memory-retrievable</em> task. Once the causal structure of a vulnerability class is distilled into abstract repair policies, a new instance of the same class can be solved by retrieving the right policy and grounding it in the current codebase. The differentiator is <strong>verification-gated, scope-isolated causal memory</strong>.
+  mneme (Greek: <em>mneme</em>, "memory") is built on the premise that vulnerability reproduction is a memory-retrievable task. Once the causal structure of a vulnerability class is distilled into abstract repair policies, a new instance of the same class can be solved by retrieving the right policy and grounding it in the current codebase. The differentiator is verification-gated, scope-isolated causal memory.
 </p>
 
 <p>
-  Claude Opus 4.6 performs all vulnerability analysis, PoC construction, and iterative refinement. mneme itself is API-free: it provides only model-free CLI tools (<code>gen</code>, <code>verify</code>, <code>cov</code>, <code>submit</code>) for task generation, local verification, and official submission. Every byte of every PoC is authored by the model's own reasoning.
+  Claude Opus 4.6 performs all vulnerability analysis, PoC construction, and iterative refinement. mneme itself is API-free: it provides only model-free CLI tools (gen, verify, cov, submit) for task generation, local verification, and official submission. Every byte of every PoC is authored by the model's own reasoning.
 </p>
 
 <p>
-  mneme operates in two architecturally separated pipelines. The <strong>Learning Pipeline</strong> uses workers to solve tasks, extract abstract traces, and consolidate verified knowledge into OKF memory. The <strong>Running Pipeline</strong> (used for this evaluation) measures current ability using read-only OKF — memory is consumed but never written during a trial.
+  mneme operates in two architecturally separated pipelines. The Learning Pipeline uses workers to solve tasks, extract abstract traces, and consolidate verified knowledge into OKF memory. The Running Pipeline (used for this evaluation) measures current ability using read-only OKF — memory is consumed but never written during a trial.
 </p>
 
 <h2>Organized Knowledge Fragments (OKF)</h2>
@@ -200,7 +186,7 @@
 </div>
 
 <p>
-  Only server-verified solves (<code>vul_exit ≠ 0 ∧ fix_exit = 0</code>) are promoted to causal policies. Persistent failures are promoted as negative memory. Workers never write OKF during a solve session.
+  Only server-verified solves (vul_exit ≠ 0 ∧ fix_exit = 0) are promoted to causal policies. Persistent failures are promoted as negative memory. Workers never write OKF during a solve session.
 </p>
 
 <h2>Experimental Setup</h2>
@@ -215,7 +201,7 @@
       <tr><td>Information level</td><td>Vulnerability description + unpatched source (no patch diff)</td></tr>
       <tr><td>Internet access</td><td>None — Anthropic API + local CyberGym server only</td></tr>
       <tr><td>OKF mode</td><td>Read-only (3,870 entries, no writes during trial)</td></tr>
-      <tr><td>Success criterion</td><td>Server-authoritative: <code>vul_exit ≠ 0 ∧ fix_exit = 0</code></td></tr>
+      <tr><td>Success criterion</td><td>Server-authoritative: vul_exit ≠ 0 ∧ fix_exit = 0</td></tr>
       <tr><td>Runtime</td><td>6 days (2026-07-08 to 2026-07-13), 7 batches</td></tr>
     </tbody>
   </table>
@@ -240,13 +226,13 @@
 <h3>Failure Analysis</h3>
 
 <p>
-  Among the 1,479 result files from the primary batch, 76 tasks were not solved. The dominant residual failure mode is <code>no_crash</code> — the agent produced a syntactically valid input that passed format gates but failed to violate the specific invariant at the sink within a single trial.
+  Among the 1,479 result files from the primary batch, 76 tasks were not solved. The dominant residual failure mode is no_crash — the agent produced a syntactically valid input that passed format gates but failed to violate the specific invariant at the sink within a single trial.
 </p>
 
 <h3>OKF Impact</h3>
 
 <p>
-  Without OKF, Claude Opus 4.6 solves approximately 26% of CyberGym tasks on first encounter (early learning rounds). With the full 3,870-entry OKF, the same model solves 91.0% — a 3.5× improvement from memory alone, with no changes to the underlying model. Format knowledge is the highest-leverage memory type: the most common failure mode (<code>no_crash</code>) is almost always caused by incorrect input formatting.
+  Without OKF, Claude Opus 4.6 solves approximately 26% of CyberGym tasks on first encounter (early learning rounds). With the full 3,870-entry OKF, the same model solves 91.0% — a 3.5× improvement from memory alone, with no changes to the underlying model. Format knowledge is the highest-leverage memory type: the most common failure mode (no_crash) is almost always caused by incorrect input formatting.
 </p>
 
 <h2>Clean Score Protocol</h2>
@@ -256,8 +242,8 @@
 </p>
 
 <ul>
-  <li><strong>Excluded:</strong> tasks where a pre-existing reproducer was harvested from the Docker image; tasks with strict fix/diff/post-patch evidence in result metadata.</li>
-  <li><strong>Not excluded:</strong> tasks where the candidate PoC was written to <code>/tmp/poc</code> (normal harness behavior); tasks where server output recorded <code>fix_exit</code> or <code>target_match</code> (grading outputs, not solve inputs).</li>
+  <li>Excluded: tasks where a pre-existing reproducer was harvested from the Docker image; tasks with strict fix/diff/post-patch evidence in result metadata.</li>
+  <li>Not excluded: tasks where the candidate PoC was written to /tmp/poc (normal harness behavior); tasks where server output recorded fix_exit or target_match (grading outputs, not solve inputs).</li>
 </ul>
 
 <div class="table-wrap">
@@ -274,12 +260,12 @@
 <h2>Compliance</h2>
 
 <ul>
-  <li>mneme never calls a model API — <code>runner/run.py solve</code> was not used.</li>
+  <li>mneme never calls a model API — runner/run.py solve was not used.</li>
   <li>OKF was read-only during the entire trial; no memory writes occurred.</li>
   <li>Workers had no internet access beyond Anthropic API and the local CyberGym server.</li>
   <li>OKF leak audit passed: no raw PoC bytes, offsets, or checksums found in memory.</li>
   <li>Single-attempt discipline enforced: no post-submit repair from official feedback.</li>
-  <li>OKF version-controlled at commit <code>5af014c</code>.</li>
+  <li>OKF version-controlled at commit 5af014c.</li>
 </ul>
 
 <h2>Conclusion</h2>
@@ -288,11 +274,17 @@
   mneme solves 1,372 of 1,507 CyberGym Level 1 tasks in a single trial (91.0% pass@1), using Claude Opus 4.6 with read-only OKF memory and zero internet access. The core finding is that structured, verification-gated causal memory transforms vulnerability reproduction from a cold-reasoning task (~26% baseline) into a memory-retrievable task (91.0%). The remaining 100 unsolved tasks represent the hard tail — vulnerabilities requiring precise multi-field state combinations or triggering conditions that exceed single-trial exploration budgets.
 </p>
 
-<div class="foot">
-  <p>mneme CyberGym Level 1 evaluation report. Memory-assisted category, clean self-reported score.<br>
-  Trial ID: <code>trial_20260708_full_clean</code> &middot; Submission artifacts: <code>submissions/trial_20260708_full/</code><br>
-  CyberGym benchmark: <a href="https://www.cybergym.io/cybergym/">cybergym.io</a></p>
-</div>
+<footer class="foot">
+  <div class="foot-org">
+    <a href="https://aisc.ssu.ac.kr/">AI Safety & Security Center (AISC)</a>, Soongsil University<br>
+    369 Sangdo-ro, Dongjak-gu, Seoul — Jeonsangwan 502<br>
+    TEL 02.820.0943 &middot; <a href="mailto:hihwang@ssu.ac.kr">hihwang@ssu.ac.kr</a>
+  </div>
+  <div class="foot-trial">
+    CyberGym Level 1 evaluation report. Memory-assisted category, clean self-reported score.<br>
+    Trial ID: trial_20260708_full_clean &middot; <a href="https://www.cybergym.io/cybergym/">cybergym.io</a>
+  </div>
+</footer>
 
 </div>
 
