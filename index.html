@@ -215,11 +215,11 @@
       float canvasAspect = u_resolution.x / u_resolution.y;
       vec2 imageUV = normalizedUV;
       if (canvasAspect > u_imageAspectRatio) {
-        float scale = canvasAspect / u_imageAspectRatio;
-        imageUV.y = (imageUV.y - 0.5) / scale + 0.5;
-      } else {
         float scale = u_imageAspectRatio / canvasAspect;
-        imageUV.x = (imageUV.x - 0.5) / scale + 0.5;
+        imageUV.y = (imageUV.y - 0.5) * scale + 0.5;
+      } else {
+        float scale = canvasAspect / u_imageAspectRatio;
+        imageUV.x = (imageUV.x - 0.5) * scale + 0.5;
       }
       imageUV.y = 1.0 - imageUV.y;
 
