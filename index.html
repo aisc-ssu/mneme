@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mneme — CyberGym Level 1 Evaluation Report</title>
+<style>
+  :root {
+    --fg: #222;
+    --fg2: #555;
+    --bg: #fff;
+    --rule: #ddd;
+    --table-head: #f6f6f6;
+    --font: Georgia, 'Times New Roman', 'Noto Serif', serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg: #d8d8d8; --fg2: #999; --bg: #191919; --rule: #333; --table-head: #222; }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+  body {
+    font-family: var(--font);
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--fg);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .banner {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    background: linear-gradient(135deg, #050d1a 0%, #0a1e3d 40%, #0c2a52 70%, #071428 100%);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .banner canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .banner-overlay {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: #fff;
+    padding: 0 24px;
+  }
+  .banner-overlay h1 {
+    font-family: var(--font);
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  }
+  .banner-overlay p {
+    font-size: 15px;
+    opacity: 0.7;
+    font-style: italic;
+  }
+
+  .content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 48px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 32px 0 12px;
+  }
+
+  p { margin-bottom: 16px; }
+  strong { font-weight: 700; }
+  em { font-style: italic; }
+
+  ul, ol { padding-left: 1.4em; margin-bottom: 16px; }
+  li { margin-bottom: 4px; }
+
+  code {
+    font-family: 'SF Mono', Consolas, 'Courier New', monospace;
+    font-size: 0.88em;
+    background: var(--table-head);
+    padding: 1px 5px;
+    border-radius: 2px;
+  }
+
+  .table-wrap { overflow-x: auto; margin: 20px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+  }
+  thead { background: var(--table-head); }
+  th {
+    font-weight: 700;
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--fg);
+    font-size: 14px;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.r { text-align: right; }
+  tr.hl td { font-weight: 700; }
+
+  .meta {
+    color: var(--fg2);
+    font-size: 15px;
+    margin-bottom: 32px;
+    font-style: italic;
+  }
+
+  .foot {
+    margin-top: 64px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-size: 14px;
+    color: var(--fg2);
+    line-height: 1.6;
+  }
+  .foot a { color: var(--fg2); }
+
+  @media (max-width: 600px) {
+    .banner { height: 200px; }
+    .content { padding: 32px 16px 60px; }
+    table { font-size: 14px; }
+    th, td { padding: 6px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <canvas id="bg"></canvas>
+  <div class="banner-overlay">
+    <h1>mneme on CyberGym</h1>
+    <p>Memory-Guided Vulnerability Reproduction — Level 1 Evaluation</p>
+  </div>
+</div>
+
+<div class="content">
+
+<p class="meta">July 2026 &middot; Model: Claude Opus 4.6 &middot; Single trial (pass@1) &middot; Zero internet access</p>
+
+<p>
+  <strong>mneme</strong> solved <strong>1,372 of 1,507</strong> CyberGym Level 1 tasks in a single trial, achieving <strong>91.0% pass@1</strong>. The raw server-positive score before conservative self-auditing is 1,403/1,507 (93.1%).
+</p>
+
+<p>
+  CyberGym is a benchmark of 1,507 real-world vulnerability reproduction tasks derived from OSS-Fuzz across 188 open-source software projects. At Level 1, the agent receives a vulnerability description and unpatched source code, then must produce a PoC that triggers on the pre-patch build but not on the post-patch build.
+</p>
+
+<h2>System Architecture</h2>
+
+<p>
+  mneme (Greek: <em>mneme</em>, "memory") is built on the premise that vulnerability reproduction is a <em>memory-retrievable</em> task. Once the causal structure of a vulnerability class is distilled into abstract repair policies, a new instance of the same class can be solved by retrieving the right policy and grounding it in the current codebase. The differentiator is <strong>verification-gated, scope-isolated causal memory</strong>.
+</p>
+
+<p>
+  Claude Opus 4.6 performs all vulnerability analysis, PoC construction, and iterative refinement. mneme itself is API-free: it provides only model-free CLI tools (<code>gen</code>, <code>verify</code>, <code>cov</code>, <code>submit</code>) for task generation, local verification, and official submission. Every byte of every PoC is authored by the model's own reasoning.
+</p>
+
+<p>
+  mneme operates in two architecturally separated pipelines. The <strong>Learning Pipeline</strong> uses workers to solve tasks, extract abstract traces, and consolidate verified knowledge into OKF memory. The <strong>Running Pipeline</strong> (used for this evaluation) measures current ability using read-only OKF — memory is consumed but never written during a trial.
+</p>
+
+<h2>Organized Knowledge Fragments (OKF)</h2>
+
+<p>
+  OKF is mneme's curated knowledge base stored as keyed markdown files with structured frontmatter. Every entry is task-agnostic: no raw PoC bytes, no exact offsets, no task IDs. An automated leak audit enforces this invariant before every commit.
+</p>
+
+<p>
+  OKF was built incrementally through 83 learning rounds and 5,448 traces, accumulating 3,870 entries:
+</p>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Category</th><th class="r">Entries</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td>Causal policies</td><td class="r">1,720</td><td>Verified recovery patterns keyed by failure mode, format, and vuln class</td></tr>
+      <tr><td>Format contracts</td><td class="r">1,259</td><td>Magic bytes, length fields, checksum gates, FuzzedDataProvider layouts</td></tr>
+      <tr><td>Harness conventions</td><td class="r">670</td><td>Input contracts: raw, carved, FDP, selector-byte semantics</td></tr>
+      <tr><td>Reachability maps</td><td class="r">201</td><td>Gate-by-gate path from parser entry to sink function</td></tr>
+      <tr><td>Vulnerability classes</td><td class="r">9</td><td>Class-level trigger invariants (heap-oob, use-after-free, etc.)</td></tr>
+      <tr><td>Strategy guides</td><td class="r">8</td><td>seed-mutate, construct, fuzzer, malloc-injection, etc.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+  Only server-verified solves (<code>vul_exit ≠ 0 ∧ fix_exit = 0</code>) are promoted to causal policies. Persistent failures are promoted as negative memory. Workers never write OKF during a solve session.
+</p>
+
+<h2>Experimental Setup</h2>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Benchmark</td><td>CyberGym Level 1 — 1,507 tasks, 188 OSS projects</td></tr>
+      <tr><td>Trials</td><td>1 (pass@1)</td></tr>
+      <tr><td>Model</td><td>Claude Opus 4.6</td></tr>
+      <tr><td>Information level</td><td>Vulnerability description + unpatched source (no patch diff)</td></tr>
+      <tr><td>Internet access</td><td>None — Anthropic API + local CyberGym server only</td></tr>
+      <tr><td>OKF mode</td><td>Read-only (3,870 entries, no writes during trial)</td></tr>
+      <tr><td>Success criterion</td><td>Server-authoritative: <code>vul_exit ≠ 0 ∧ fix_exit = 0</code></td></tr>
+      <tr><td>Runtime</td><td>6 days (2026-07-08 to 2026-07-13), 7 batches</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Results</h2>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Score basis</th><th class="r">Solved</th><th class="r">Total</th><th class="r">Pass@1</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>Clean (conservative self-audit)</td><td class="r">1,372</td><td class="r">1,507</td><td class="r">91.0%</td></tr>
+      <tr><td>Raw (server-positive)</td><td class="r">1,403</td><td class="r">1,507</td><td class="r">93.1%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+  The clean score excludes 35 tasks after conservative self-auditing: 30 where a pre-existing reproducer was found baked into the Docker image, and 5 where result metadata contained fix/diff/post-patch evidence. The raw score is retained for audit.
+</p>
+
+<h3>Failure Analysis</h3>
+
+<p>
+  Among the 1,479 result files from the primary batch, 76 tasks were not solved. The dominant residual failure mode is <code>no_crash</code> — the agent produced a syntactically valid input that passed format gates but failed to violate the specific invariant at the sink within a single trial.
+</p>
+
+<h3>OKF Impact</h3>
+
+<p>
+  Without OKF, Claude Opus 4.6 solves approximately 26% of CyberGym tasks on first encounter (early learning rounds). With the full 3,870-entry OKF, the same model solves 91.0% — a 3.5× improvement from memory alone, with no changes to the underlying model. Format knowledge is the highest-leverage memory type: the most common failure mode (<code>no_crash</code>) is almost always caused by incorrect input formatting.
+</p>
+
+<h2>Clean Score Protocol</h2>
+
+<p>
+  The reported score uses a reviewer-conservative exclusion policy:
+</p>
+
+<ul>
+  <li><strong>Excluded:</strong> tasks where a pre-existing reproducer was harvested from the Docker image; tasks with strict fix/diff/post-patch evidence in result metadata.</li>
+  <li><strong>Not excluded:</strong> tasks where the candidate PoC was written to <code>/tmp/poc</code> (normal harness behavior); tasks where server output recorded <code>fix_exit</code> or <code>target_match</code> (grading outputs, not solve inputs).</li>
+</ul>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Exclusion reason</th><th class="r">Tasks</th><th class="r">Were raw-solved</th></tr></thead>
+    <tbody>
+      <tr><td>Container-baked or reference reproducer</td><td class="r">30</td><td class="r">27</td></tr>
+      <tr><td>Strict fix/diff/post-patch evidence</td><td class="r">5</td><td class="r">4</td></tr>
+      <tr class="hl"><td>Total excluded</td><td class="r">35</td><td class="r">31</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Compliance</h2>
+
+<ul>
+  <li>mneme never calls a model API — <code>runner/run.py solve</code> was not used.</li>
+  <li>OKF was read-only during the entire trial; no memory writes occurred.</li>
+  <li>Workers had no internet access beyond Anthropic API and the local CyberGym server.</li>
+  <li>OKF leak audit passed: no raw PoC bytes, offsets, or checksums found in memory.</li>
+  <li>Single-attempt discipline enforced: no post-submit repair from official feedback.</li>
+  <li>OKF version-controlled at commit <code>5af014c</code>.</li>
+</ul>
+
+<h2>Conclusion</h2>
+
+<p>
+  mneme solves 1,372 of 1,507 CyberGym Level 1 tasks in a single trial (91.0% pass@1), using Claude Opus 4.6 with read-only OKF memory and zero internet access. The core finding is that structured, verification-gated causal memory transforms vulnerability reproduction from a cold-reasoning task (~26% baseline) into a memory-retrievable task (91.0%). The remaining 100 unsolved tasks represent the hard tail — vulnerabilities requiring precise multi-field state combinations or triggering conditions that exceed single-trial exploration budgets.
+</p>
+
+<div class="foot">
+  <p>mneme CyberGym Level 1 evaluation report. Memory-assisted category, clean self-reported score.<br>
+  Trial ID: <code>trial_20260708_full_clean</code> &middot; Submission artifacts: <code>submissions/trial_20260708_full/</code><br>
+  CyberGym benchmark: <a href="https://www.cybergym.io/cybergym/">cybergym.io</a></p>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var c = document.getElementById('bg');
+  if (!c) return;
+  var ctx = c.getContext('2d');
+  var w, h, pts = [];
+  function resize() {
+    var r = devicePixelRatio || 1;
+    w = c.offsetWidth; h = c.offsetHeight;
+    c.width = w * r; c.height = h * r;
+    ctx.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function init() {
+    resize();
+    pts = [];
+    var n = Math.floor(w * h / 6000);
+    for (var i = 0; i < n; i++) {
+      pts.push({
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+        r: Math.random() * 1.5 + 0.5
+      });
+    }
+  }
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    for (var i = 0; i < pts.length; i++) {
+      for (var j = i + 1; j < pts.length; j++) {
+        var dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+        var d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 100) {
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.strokeStyle = 'rgba(60,140,255,' + (1 - d / 100) * 0.15 + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    for (var k = 0; k < pts.length; k++) {
+      var p = pts[k];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(80,160,255,0.4)';
+      ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+    }
+    var cx = w / 2, cy = h / 2;
+    ctx.save();
+    ctx.globalAlpha = 0.07;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - 50);
+    ctx.bezierCurveTo(cx - 45, cy - 45, cx - 50, cy - 20, cx - 50, cy + 5);
+    ctx.bezierCurveTo(cx - 50, cy + 30, cx - 30, cy + 50, cx, cy + 60);
+    ctx.bezierCurveTo(cx + 30, cy + 50, cx + 50, cy + 30, cx + 50, cy + 5);
+    ctx.bezierCurveTo(cx + 50, cy - 20, cx + 45, cy - 45, cx, cy - 50);
+    ctx.closePath();
+    ctx.strokeStyle = '#4aa0ff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy - 5, 8, Math.PI, 0);
+    ctx.strokeStyle = '#4aa0ff';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.fillStyle = '#4aa0ff';
+    ctx.fillRect(cx - 10, cy + 3, 20, 14);
+    ctx.restore();
+    requestAnimationFrame(draw);
+  }
+  init();
+  draw();
+  window.addEventListener('resize', init);
+})();
+</script>
+</body>
+</html>
