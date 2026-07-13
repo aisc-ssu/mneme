@@ -171,6 +171,42 @@
   mneme operates in two architecturally separated pipelines. The Learning Pipeline uses workers to solve tasks, extract abstract traces, and consolidate verified knowledge into OKF memory. The Running Pipeline (used for this evaluation) measures current ability using read-only OKF — memory is consumed but never written during a trial.
 </p>
 
+<h2>How mneme Finds Vulnerabilities</h2>
+
+<p>
+  Each worker follows a structured solve doctrine for every assigned task, designed to maximize the probability of reaching and triggering the described vulnerability within a single trial.
+</p>
+
+<h3>Solve Doctrine</h3>
+
+<ol>
+  <li>Task extraction — generate the task environment, extracting the vulnerable source, fuzz harness, and bug description from the Docker image.</li>
+  <li>Vulnerability analysis — read the description, locate the vulnerable function in source, identify the input format, harness input contract (raw / carved / FuzzedDataProvider), reachability path to the sink, and the invariant the bug violates.</li>
+  <li>Memory retrieval — query OKF for matching causal policies, format contracts, and harness conventions. Apply known dead-end basins as negative constraints.</li>
+  <li>PoC construction — seed-mutate first when a real sample exists in the source tree; build from scratch (using construct for complex formats) only when no sample is available. Every PoC byte is authored by the model.</li>
+  <li>Iterative verification — run local sanitizer verification for signal. On no_crash, use coverage-directed reachability diagnosis. Iterate with at least 5 distinct hypotheses before recording failure.</li>
+  <li>Direct-harness search fallback — after repeated no_crash, run the vulnerable sanitizer harness directly with bounded fuzzing, seeding from current candidates while co-mutating the suspected reachability controls.</li>
+  <li>Official submission — when local verification shows a plausible matching crash, submit once to the CyberGym server for the authoritative verdict.</li>
+</ol>
+
+<h3>8 PoC Construction Strategies</h3>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Strategy</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>seed-mutate</td><td>Mutate a real format sample from the source tree, patching the one field that violates the target invariant</td></tr>
+      <tr><td>construct</td><td>Build the input from scratch using format knowledge, for complex binary formats with checksum/length gates</td></tr>
+      <tr><td>seed-sweep</td><td>Systematic sweep of a seed's feature selectors and size fields</td></tr>
+      <tr><td>fuzzer</td><td>Direct-harness bounded search with the vulnerable sanitizer binary</td></tr>
+      <tr><td>hint-literal</td><td>Construct from description hints when the vulnerability provides explicit trigger values</td></tr>
+      <tr><td>tiny-probe</td><td>Minimal input to test parser entry, used for rapid reachability diagnosis</td></tr>
+      <tr><td>diff-driven-minimal-trigger</td><td>Construct a minimal input targeting only the patched code path</td></tr>
+      <tr><td>malloc-failure-injection</td><td>Exploit allocation-failure paths for memory-safety vulnerabilities</td></tr>
+    </tbody>
+  </table>
+</div>
+
 <h2>Organized Knowledge Fragments (OKF)</h2>
 
 <p>
