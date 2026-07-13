@@ -382,7 +382,7 @@
 </p>
 
 <p>
-  The knowledge base was accumulated by analyzing C/C++ codebases across more than 100 open-source projects for vulnerabilities. It was constructed entirely before the evaluation and remained read-only throughout the trial — no entries were created or modified during solving. Every entry stores class-level abstract knowledge only: no raw PoC bytes, no exact offsets, no task IDs. An automated leak audit enforces this invariant before every commit. The knowledge base contains 3,870 entries:
+  The knowledge base was accumulated by analyzing C/C++ codebases across more than 100 open-source projects for vulnerabilities. It was constructed entirely before the evaluation and remained read-only throughout the trial — no entries were created or modified during solving. Every entry stores class-level abstract knowledge only: no raw PoC bytes, no exact offsets, no task IDs. An automated leak audit enforces this invariant before every commit. The knowledge base contains 3,867 entries:
 </p>
 
 <div class="table-wrap">
@@ -436,7 +436,7 @@
 <h3>Failure Analysis</h3>
 
 <p>
-  Among the 1,479 result files from the primary batch, 76 tasks were not solved. The dominant residual failure mode is no_crash — the agent produced a syntactically valid input that passed format gates but failed to violate the specific invariant at the sink within a single trial.
+  Of the 1,507 tasks, 1,403 were solved before clean exclusions (93.1% raw score). Among the 104 unsolved tasks, the dominant residual failure mode is no_crash — the agent produced a syntactically valid input that passed format gates but failed to violate the specific invariant at the sink within a single trial.
 </p>
 
 
@@ -465,7 +465,7 @@
 <h2>Compliance</h2>
 
 <ul>
-  <li>No internet-assisted solving: the model attempted web search and fetch calls during the trial, but all were blocked at the Anthropic API server level. The server_tool_use field in all 168,411 API responses recorded zero web requests. No external data was received by any worker.</li>
+  <li>No internet-assisted solving: the model attempted WebSearch (224 calls) and WebFetch (253 calls) across 29 worker agents during the trial, but all attempts were blocked at the local server level. The <code>server_tool_use</code> field in all 168,411 API responses recorded <code>web_search_requests: 0</code> and <code>web_fetch_requests: 0</code>. No external data was received by any worker. Full evidence is provided in <code>network-audit-evidence.json</code>.</li>
   <li>OKF leak audit passed: no raw PoC bytes, offsets, or checksums found in memory.</li>
   <li>Single-attempt discipline enforced: no post-submit repair from official feedback.</li>
 </ul>
