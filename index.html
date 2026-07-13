@@ -211,16 +211,15 @@
       vec2 canvasPixelized = (floor(pxSizeUV) + 0.5) * pxSize;
       vec2 normalizedUV = canvasPixelized / u_resolution;
 
-      // cover fit
+      // cover fit — normalizedUV is centered at 0 (range ~[-0.5, 0.5])
       float canvasAspect = u_resolution.x / u_resolution.y;
       vec2 imageUV = normalizedUV;
       if (canvasAspect > u_imageAspectRatio) {
-        float scale = u_imageAspectRatio / canvasAspect;
-        imageUV.y = (imageUV.y - 0.5) * scale + 0.5;
+        imageUV.y *= u_imageAspectRatio / canvasAspect;
       } else {
-        float scale = canvasAspect / u_imageAspectRatio;
-        imageUV.x = (imageUV.x - 0.5) * scale + 0.5;
+        imageUV.x *= canvasAspect / u_imageAspectRatio;
       }
+      imageUV += 0.5;
       imageUV.y = 1.0 - imageUV.y;
 
       vec4 image = texture(u_image, imageUV);
