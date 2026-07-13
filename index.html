@@ -183,38 +183,35 @@
 <h2>How mneme Finds Vulnerabilities</h2>
 
 <p>
-  mneme uses a two-phase approach. First, an Opus 4.6 scout agent performs reconnaissance on the target codebase — reading the harness source, identifying the input contract, locating the sink function, and retrieving relevant OKF policies. The scout produces a structured analysis that is then handed off to the solve workers. Each worker follows a structured solve doctrine, informed by the scout's findings, to maximize the probability of reaching and triggering the described vulnerability within a single trial.
+  mneme operates as a coordinated multi-agent system. A scout agent performs initial reconnaissance on the target — analyzing source code structure, identifying input entry points, tracing data flow to potentially vulnerable sinks, and retrieving relevant knowledge from OKF. The scout's structured findings are then distributed to worker agents, each of which independently attempts to discover, analyze, and reproduce the vulnerability.
 </p>
 
 <p>
-  During analysis and PoC construction, workers leverage a set of binary analysis tool skills: angr for static reachability analysis, construct for declarative binary format building, gdb for dynamic debugging inside the vulnerable container, hexview for structured inspection of seed files and candidates, and pwntools for low-level binary manipulation and payload construction.
+  Workers are equipped with binary analysis tool skills for deep inspection: angr for static reachability analysis, construct for declarative binary format building, gdb for dynamic debugging, hexview for structured binary inspection, and pwntools for low-level payload construction.
 </p>
 
 <h3>Analysis Pipeline</h3>
 
 <ol>
-  <li>Task extraction — generate the task environment, extracting the vulnerable source, fuzz harness, and bug description from the Docker image.</li>
-  <li>Vulnerability analysis — read the description, locate the vulnerable function in source, identify the input format, harness input contract (raw / carved / FuzzedDataProvider), reachability path to the sink, and the invariant the bug violates.</li>
-  <li>Memory retrieval — query OKF for matching causal policies, format contracts, and harness conventions. Apply known dead-end basins as negative constraints.</li>
-  <li>PoC construction — seed-mutate first when a real sample exists in the source tree; build from scratch (using construct for complex formats) only when no sample is available. Every PoC byte is authored by the model.</li>
-  <li>Iterative verification — run local sanitizer verification for signal. On no_crash, use coverage-directed reachability diagnosis. Iterate with at least 5 distinct hypotheses before recording failure.</li>
-  <li>Direct-harness search fallback — after repeated no_crash, run the vulnerable sanitizer harness directly with bounded fuzzing, seeding from current candidates while co-mutating the suspected reachability controls.</li>
-  <li>Official submission — when local verification shows a plausible matching crash, submit once to the CyberGym server for the authoritative verdict.</li>
+  <li>Target reconnaissance — the scout examines source code, identifies input contracts, locates potential vulnerability sinks, and retrieves matching OKF policies.</li>
+  <li>Vulnerability analysis — workers analyze the target function, input format, data flow path to the sink, and the invariant that the vulnerability violates.</li>
+  <li>PoC construction — workers select a construction strategy based on available context: mutating existing format samples, building inputs from scratch for complex binary formats, or using bounded fuzzing to search the input space.</li>
+  <li>Iterative verification — each candidate is tested against the target binary with sanitizer instrumentation. On failure, workers perform coverage-directed diagnosis and iterate with alternative hypotheses.</li>
 </ol>
 
-<h3>8 PoC Construction Strategies</h3>
+<h3>PoC Construction Strategies</h3>
 
 <div class="table-wrap">
   <table>
     <thead><tr><th>Strategy</th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td>seed-mutate</td><td>Mutate a real format sample from the source tree, patching the one field that violates the target invariant</td></tr>
-      <tr><td>construct</td><td>Build the input from scratch using format knowledge, for complex binary formats with checksum/length gates</td></tr>
+      <tr><td>seed-mutate</td><td>Mutate a real format sample, patching the field that violates the target invariant</td></tr>
+      <tr><td>construct</td><td>Build the input from scratch using format knowledge, for binary formats with checksum/length gates</td></tr>
       <tr><td>seed-sweep</td><td>Systematic sweep of a seed's feature selectors and size fields</td></tr>
-      <tr><td>fuzzer</td><td>Direct-harness bounded search with the vulnerable sanitizer binary</td></tr>
-      <tr><td>hint-literal</td><td>Construct from description hints when the vulnerability provides explicit trigger values</td></tr>
-      <tr><td>tiny-probe</td><td>Minimal input to test parser entry, used for rapid reachability diagnosis</td></tr>
-      <tr><td>diff-driven-minimal-trigger</td><td>Construct a minimal input targeting only the patched code path</td></tr>
+      <tr><td>fuzzer</td><td>Bounded search with the instrumented target binary</td></tr>
+      <tr><td>hint-literal</td><td>Construct from description hints when explicit trigger values are available</td></tr>
+      <tr><td>tiny-probe</td><td>Minimal input for rapid reachability diagnosis</td></tr>
+      <tr><td>diff-driven-minimal-trigger</td><td>Construct a minimal input targeting only the affected code path</td></tr>
       <tr><td>malloc-failure-injection</td><td>Exploit allocation-failure paths for memory-safety vulnerabilities</td></tr>
     </tbody>
   </table>
