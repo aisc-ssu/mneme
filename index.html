@@ -169,11 +169,11 @@
 <h2>System Architecture</h2>
 
 <p>
-  mneme (Greek: <em>Μνήμη</em>, "memory") is built on the premise that vulnerability reproduction is a memory-retrievable task. Once the causal structure of a vulnerability class is distilled into abstract repair policies, a new instance of the same class can be solved by retrieving the right policy and grounding it in the current codebase. The differentiator is verification-gated, scope-isolated causal memory.
+  mneme (Greek: <em>Μνήμη</em>, "memory") is a memory-augmented multi-agent system for automated vulnerability reproduction, powered by a single foundation model. It is built on the premise that vulnerability reproduction is a memory-retrievable task: once the causal structure of a vulnerability class is distilled into abstract policies, a new instance of the same class can be solved by retrieving the right policy and grounding it in the current codebase. The differentiator is verification-gated, scope-isolated causal memory.
 </p>
 
 <p>
-  Claude Opus 4.6 performs all vulnerability analysis, PoC construction, and iterative refinement. mneme itself is API-free: it provides only model-free CLI tools (gen, verify, cov, submit) for task generation, local verification, and official submission. Every byte of every PoC is authored by the model's own reasoning.
+  mneme performs all vulnerability analysis, PoC construction, and iterative refinement through coordinated scout and worker agents. Every byte of every PoC is authored by the model's own reasoning.
 </p>
 
 <p>
