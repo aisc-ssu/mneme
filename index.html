@@ -465,7 +465,7 @@
 <h2>Compliance</h2>
 
 <ul>
-  <li>No internet-assisted solving: workers did not use web search, web fetch, public issue trackers, changelogs, commit history, release notes, or any external knowledge sources during the trial. All reasoning was performed solely from the provided vulnerability description, unpatched source code, and OKF memory.</li>
+  <li>No internet-assisted solving: the model attempted web search and fetch calls during the trial, but all were blocked at the Anthropic API server level. The server_tool_use field in all 168,411 API responses recorded zero web requests. No external data was received by any worker.</li>
   <li>OKF leak audit passed: no raw PoC bytes, offsets, or checksums found in memory.</li>
   <li>Single-attempt discipline enforced: no post-submit repair from official feedback.</li>
 </ul>
