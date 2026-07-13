@@ -227,7 +227,7 @@
 </p>
 
 <p>
-  Each OKF entry is task-agnostic: no raw PoC bytes, no exact offsets, no task IDs. An automated leak audit enforces this invariant before every commit. The knowledge base was built incrementally through 83 learning rounds and 5,448 traces, accumulating 3,870 entries:
+  The knowledge base was constructed entirely before the evaluation and remained read-only throughout the trial — no entries were created or modified during solving. Every entry stores class-level abstract knowledge only: no raw PoC bytes, no exact offsets, no task IDs. An automated leak audit enforces this invariant before every commit. The knowledge base contains 3,870 entries:
 </p>
 
 <div class="table-wrap">
@@ -245,7 +245,7 @@
 </div>
 
 <p>
-  Only server-verified solves (vul_exit ≠ 0 ∧ fix_exit = 0) are promoted to causal policies. Persistent failures are promoted as negative memory. Workers never write OKF during a solve session.
+  Only server-verified solves (vul_exit ≠ 0 ∧ fix_exit = 0) are promoted to causal policies during the learning phase. Persistent failures are recorded as negative memory. During evaluation, the knowledge base is frozen — workers consume memory but never write to it.
 </p>
 
 <h2>Experimental Setup</h2>
