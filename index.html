@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>mneme — CyberGym Level 1 Evaluation Report</title>
+<title>mneme — Multi-Agent System for Automated Vulnerability Research</title>
 <link rel="icon" type="image/png" href="logo.png">
 <meta property="og:title" content="mneme — CyberGym Level 1 Evaluation Report">
 <meta property="og:description" content="Memory-guided vulnerability reproduction agent achieving 91.0% pass@1 on CyberGym Level 1 (1,372/1,507).">
@@ -40,16 +40,17 @@
     position: relative;
     width: 100%;
     height: 320px;
-    background: url('banner.jpg') center/cover no-repeat;
+    background: #111;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
   }
-  .banner::after {
-    content: '';
+  .banner canvas {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    width: 100%;
+    height: 100%;
   }
   .banner-overlay {
     position: relative;
@@ -148,11 +149,169 @@
 <body>
 
 <div class="banner">
+  <canvas id="dither-canvas"></canvas>
   <div class="banner-overlay">
-    <h1>mneme on CyberGym</h1>
-    <p>Memory-Guided Vulnerability Reproduction — Level 1 Evaluation</p>
+    <h1>mneme — Multi-Agent System for Automated Vulnerability Research</h1>
+    <p>CyberGym Level 1 Evaluation Report</p>
   </div>
 </div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('dither-canvas');
+  const gl = canvas.getContext('webgl2', { alpha: false });
+  if (!gl) return;
+
+  const vsSource = `#version 300 es
+    in vec2 a_position;
+    void main() { gl_Position = vec4(a_position, 0.0, 1.0); }
+  `;
+
+  const fsSource = `#version 300 es
+    precision mediump float;
+    uniform vec2 u_resolution;
+    uniform float u_pixelRatio;
+    uniform sampler2D u_image;
+    uniform float u_imageAspectRatio;
+    uniform vec4 u_colorFront;
+    uniform vec4 u_colorBack;
+    uniform float u_pxSize;
+    uniform float u_colorSteps;
+    out vec4 fragColor;
+
+    #define PI 3.14159265358979323846
+
+    float hash21(vec2 p) {
+      p = fract(p * vec2(0.3183099, 0.3678794)) + 0.1;
+      p += dot(p, p + 19.19);
+      return fract(p.x * p.y);
+    }
+
+    const int bayer8x8[64] = int[64](
+      0, 32, 8, 40, 2, 34, 10, 42,
+      48, 16, 56, 24, 50, 18, 58, 26,
+      12, 44, 4, 36, 14, 46, 6, 38,
+      60, 28, 52, 20, 62, 30, 54, 22,
+      3, 35, 11, 43, 1, 33, 9, 41,
+      51, 19, 59, 27, 49, 17, 57, 25,
+      15, 47, 7, 39, 13, 45, 5, 37,
+      63, 31, 55, 23, 61, 29, 53, 21
+    );
+
+    float getBayerValue(vec2 uv) {
+      ivec2 pos = ivec2(fract(uv / 8.0) * 8.0);
+      int index = pos.y * 8 + pos.x;
+      return float(bayer8x8[index]) / 64.0;
+    }
+
+    void main() {
+      float pxSize = u_pxSize * u_pixelRatio;
+      vec2 pxSizeUV = gl_FragCoord.xy - 0.5 * u_resolution;
+      pxSizeUV /= pxSize;
+      vec2 canvasPixelized = (floor(pxSizeUV) + 0.5) * pxSize;
+      vec2 normalizedUV = canvasPixelized / u_resolution;
+
+      // cover fit
+      float canvasAspect = u_resolution.x / u_resolution.y;
+      vec2 imageUV = normalizedUV;
+      if (canvasAspect > u_imageAspectRatio) {
+        float scale = canvasAspect / u_imageAspectRatio;
+        imageUV.y = (imageUV.y - 0.5) / scale + 0.5;
+      } else {
+        float scale = u_imageAspectRatio / canvasAspect;
+        imageUV.x = (imageUV.x - 0.5) / scale + 0.5;
+      }
+      imageUV.y = 1.0 - imageUV.y;
+
+      vec4 image = texture(u_image, imageUV);
+      float lum = dot(vec3(0.2126, 0.7152, 0.0722), image.rgb);
+
+      float dithering = getBayerValue(pxSizeUV) - 0.5;
+      float colorSteps = max(floor(u_colorSteps), 1.0);
+      float brightness = clamp(lum + dithering / colorSteps, 0.0, 1.0);
+      float quantLum = floor(brightness * colorSteps + 0.5) / colorSteps;
+
+      vec3 fgColor = u_colorFront.rgb * u_colorFront.a;
+      float fgOpacity = u_colorFront.a;
+      vec3 bgColor = u_colorBack.rgb * u_colorBack.a;
+      float bgOpacity = u_colorBack.a;
+
+      vec3 color = fgColor * quantLum;
+      float opacity = fgOpacity * quantLum;
+      color += bgColor * (1.0 - opacity);
+      opacity += bgOpacity * (1.0 - opacity);
+
+      fragColor = vec4(color, opacity);
+    }
+  `;
+
+  function createShader(type, source) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, source);
+    gl.compileShader(s);
+    return s;
+  }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, createShader(gl.VERTEX_SHADER, vsSource));
+  gl.attachShader(prog, createShader(gl.FRAGMENT_SHADER, fsSource));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const aPos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uPR = gl.getUniformLocation(prog, 'u_pixelRatio');
+  const uImg = gl.getUniformLocation(prog, 'u_image');
+  const uAspect = gl.getUniformLocation(prog, 'u_imageAspectRatio');
+  const uFront = gl.getUniformLocation(prog, 'u_colorFront');
+  const uBack = gl.getUniformLocation(prog, 'u_colorBack');
+  const uPxSize = gl.getUniformLocation(prog, 'u_pxSize');
+  const uSteps = gl.getUniformLocation(prog, 'u_colorSteps');
+
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = function() {
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    gl.uniform1i(uImg, 0);
+    gl.uniform1f(uAspect, img.width / img.height);
+    gl.uniform4f(uFront, 0.85, 0.82, 0.75, 1.0);
+    gl.uniform4f(uBack, 0.08, 0.07, 0.06, 1.0);
+    gl.uniform1f(uPxSize, 3.0);
+    gl.uniform1f(uSteps, 4.0);
+
+    function render() {
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+      }
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+      gl.uniform1f(uPR, dpr);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+
+    render();
+    window.addEventListener('resize', render);
+  };
+  img.src = 'banner.jpg';
+})();
+</script>
 
 <div class="content">
 
