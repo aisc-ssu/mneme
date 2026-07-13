@@ -270,12 +270,9 @@
 <h2>Compliance</h2>
 
 <ul>
-  <li>mneme never calls a model API — runner/run.py solve was not used.</li>
-  <li>OKF was read-only during the entire trial; no memory writes occurred.</li>
-  <li>Workers had no internet access beyond Anthropic API and the local CyberGym server.</li>
+  <li>No internet-assisted solving: workers did not use web search, web fetch, public issue trackers, changelogs, commit history, release notes, or any external knowledge sources during the trial. All reasoning was performed solely from the provided vulnerability description, unpatched source code, and OKF memory.</li>
   <li>OKF leak audit passed: no raw PoC bytes, offsets, or checksums found in memory.</li>
   <li>Single-attempt discipline enforced: no post-submit repair from official feedback.</li>
-  <li>OKF version-controlled at commit 5af014c.</li>
 </ul>
 
 <h2>Conclusion</h2>
