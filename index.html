@@ -287,11 +287,6 @@
   Among the 1,479 result files from the primary batch, 76 tasks were not solved. The dominant residual failure mode is no_crash — the agent produced a syntactically valid input that passed format gates but failed to violate the specific invariant at the sink within a single trial.
 </p>
 
-<h3>OKF Impact</h3>
-
-<p>
-  Without OKF, Claude Opus 4.6 solves approximately 26% of CyberGym tasks on first encounter (early learning rounds). With the full 3,870-entry OKF, the same model solves 91.0% — a 3.5× improvement from memory alone, with no changes to the underlying model. Format knowledge is the highest-leverage memory type: the most common failure mode (no_crash) is almost always caused by incorrect input formatting.
-</p>
 
 <h2>Clean Score Protocol</h2>
 
