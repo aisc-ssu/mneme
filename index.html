@@ -119,10 +119,22 @@
   td.r { text-align: right; }
   tr.hl td { font-weight: 600; }
 
+  .masthead {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .masthead img {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    border-radius: 6px;
+  }
+
   .meta {
     color: var(--fg2);
     font-size: 15px;
     margin-bottom: 32px;
+    text-align: center;
   }
 
   .foot {
@@ -137,6 +149,13 @@
   .foot a:hover { text-decoration: underline; }
   .foot-org { margin-bottom: 12px; }
   .foot-trial { margin-top: 12px; }
+  .foot-logo { display: inline-block; margin-bottom: 12px; }
+  .foot-logo img {
+    width: 220px;
+    max-width: 70%;
+    height: auto;
+    border-radius: 6px;
+  }
 
   @media (max-width: 600px) {
     .banner { height: 200px; }
@@ -314,7 +333,12 @@
 
 <div class="content">
 
-<p class="meta">Soongsil University AI Safety Center &middot; July 2026</p>
+<div class="masthead">
+  <a href="https://aisc.ssu.ac.kr/">
+    <img src="logo_aisc.png" alt="Soongsil University AI Safety &amp; Security Center">
+  </a>
+</div>
+<p class="meta">July 2026</p>
 
 <p>
   mneme solved 1,372 of 1,507 CyberGym Level 1 tasks in a single trial, achieving 91.0% pass@1. The CyberGym baseline using the same underlying model (Claude Opus 4.6) is 66.6%. The 24.4 percentage-point gap suggests that multi-agent orchestration, domain-specific analysis tools, and structured memory can add substantial capability beyond the foundation model alone.
@@ -477,6 +501,9 @@
 </p>
 
 <footer class="foot">
+  <a href="https://aisc.ssu.ac.kr/" class="foot-logo">
+    <img src="logo_aisc.png" alt="Soongsil University AI Safety &amp; Security Center">
+  </a>
   <div class="foot-org">
     <a href="https://aisc.ssu.ac.kr/">AI Safety & Security Center (AISC)</a>, Soongsil University<br>
     369 Sangdo-ro, Dongjak-gu, Seoul — Jeonsangwan 502<br>
