@@ -119,10 +119,23 @@
   td.r { text-align: right; }
   tr.hl td { font-weight: 600; }
 
+  .site-header {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 18px 24px;
+  }
+  .site-header img {
+    height: 48px;
+    width: auto;
+    display: block;
+    border-radius: 6px;
+  }
+
   .meta {
     color: var(--fg2);
     font-size: 15px;
     margin-bottom: 32px;
+    text-align: center;
   }
 
   .foot {
@@ -137,6 +150,13 @@
   .foot a:hover { text-decoration: underline; }
   .foot-org { margin-bottom: 12px; }
   .foot-trial { margin-top: 12px; }
+  .foot-logo { display: inline-block; margin-bottom: 12px; }
+  .foot-logo img {
+    width: 220px;
+    max-width: 70%;
+    height: auto;
+    border-radius: 6px;
+  }
 
   @media (max-width: 600px) {
     .banner { height: 200px; }
@@ -147,6 +167,12 @@
 </style>
 </head>
 <body>
+
+<header class="site-header">
+  <a href="https://aisc.ssu.ac.kr/">
+    <img src="logo_aisc.png" alt="Soongsil University AI Safety Center">
+  </a>
+</header>
 
 <div class="banner">
   <canvas id="dither-canvas"></canvas>
@@ -314,10 +340,10 @@
 
 <div class="content">
 
-<p class="meta">Soongsil University AI Safety Center &middot; July 2026</p>
+<p class="meta">July 2026</p>
 
 <p>
-  mneme solved 1,372 of 1,507 CyberGym Level 1 tasks in a single trial, achieving 91.0% pass@1. The CyberGym baseline for the same underlying model (Claude Opus 4.6) is 66.6%. The 24.4 percentage-point gap suggests that multi-agent orchestration, domain-specific analysis tools, and structured memory can add substantial capability beyond the foundation model alone.
+  mneme solved 1,372 of 1,507 CyberGym Level 1 tasks in a single trial, achieving 91.0% pass@1. The CyberGym baseline using the same underlying model (Claude Opus 4.6) is 66.6%. The 24.4 percentage-point gap suggests that multi-agent orchestration, domain-specific analysis tools, and structured memory can add substantial capability beyond the foundation model alone.
 </p>
 
 <p>
@@ -327,7 +353,7 @@
 <h2>System Architecture</h2>
 
 <p>
-  mneme (Greek: <em>Μνήμη</em>, "memory") is a multi-agent security analysis system that discovers, analyzes, and reproduces software vulnerabilities, powered by a single foundation model with structured causal memory. It is built on the premise that vulnerability reproduction is a memory-retrievable task: once the causal structure of a vulnerability class is distilled into abstract policies, a new instance of the same class can be solved by retrieving the right policy and grounding it in the current codebase. The differentiator is verification-gated, scope-isolated causal memory.
+  mneme (Greek: <em>Μνήμη</em>, "memory") is a multi-agent security analysis system that discovers, analyzes, and reproduces software vulnerabilities, powered by a single foundation model with structured causal memory. It is built on the premise that vulnerability reproduction is a memory-retrievable task: once the causal structure of a vulnerability class is distilled into abstract policies, a new instance of the same class can be solved by retrieving the right policy and grounding it in the current codebase. Its key differentiator is verification-gated, scope-isolated causal memory.
 </p>
 
 <p>
@@ -364,7 +390,7 @@
     <thead><tr><th>Strategy</th><th>Description</th></tr></thead>
     <tbody>
       <tr><td>seed-mutate</td><td>Mutate a real format sample, patching the field that violates the target invariant</td></tr>
-      <tr><td>construct</td><td>Build the input from scratch using format knowledge, for binary formats with checksum/length gates</td></tr>
+      <tr><td>construct</td><td>Build the input from scratch using format knowledge for binary formats with checksum/length gates</td></tr>
       <tr><td>seed-sweep</td><td>Systematic sweep of a seed's feature selectors and size fields</td></tr>
       <tr><td>fuzzer</td><td>Bounded search with the instrumented target binary</td></tr>
       <tr><td>hint-literal</td><td>Construct from description hints when explicit trigger values are available</td></tr>
@@ -382,7 +408,7 @@
 </p>
 
 <p>
-  The knowledge base was accumulated by analyzing C/C++ codebases across more than 100 open-source projects for vulnerabilities. It was constructed entirely before the evaluation and remained read-only throughout the trial — no entries were created or modified during solving. Every entry stores class-level abstract knowledge only: no raw PoC bytes, no exact offsets, no task IDs. An automated leak audit enforces this invariant before every commit. The knowledge base contains 3,867 entries:
+  The knowledge base was accumulated by analyzing C/C++ codebases across more than 100 open-source projects for vulnerabilities. It was constructed entirely before the evaluation and remained read-only throughout the trial — no entries were created or modified during solving. Each entry stores only class-level abstract knowledge: no raw PoC bytes, no exact offsets, no task IDs. An automated leak audit enforces this invariant before every commit. The knowledge base contains 3,867 entries:
 </p>
 
 <div class="table-wrap">
@@ -477,8 +503,11 @@
 </p>
 
 <footer class="foot">
+  <a href="https://aisc.ssu.ac.kr/" class="foot-logo">
+    <img src="logo_aisc.png" alt="Soongsil University AI Safety Center">
+  </a>
   <div class="foot-org">
-    <a href="https://aisc.ssu.ac.kr/">AI Safety & Security Center (AISC)</a>, Soongsil University<br>
+    <a href="https://aisc.ssu.ac.kr/">AI Safety Center (AISC)</a>, Soongsil University<br>
     369 Sangdo-ro, Dongjak-gu, Seoul — Jeonsangwan 502<br>
     TEL 02.820.0943 &middot; <a href="mailto:hihwang@ssu.ac.kr">hihwang@ssu.ac.kr</a>
   </div>
