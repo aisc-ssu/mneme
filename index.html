@@ -67,14 +67,23 @@
     text-shadow: 0 2px 20px rgba(0,0,0,0.5);
   }
   .banner-overlay p {
-    font-size: 15px;
-    opacity: 0.75;
+    margin-bottom: 0;
+    font-size: 17px;
+    font-weight: 500;
+    opacity: 0.9;
+    text-shadow: 0 1px 10px rgba(0,0,0,0.65);
   }
   .banner-overlay .authors {
-    margin-top: 8px;
-    font-size: 13px;
+    margin-top: 10px;
+    font-size: 15px;
     line-height: 1.5;
-    opacity: 0.72;
+    opacity: 0.92;
+  }
+  .banner-overlay .banner-meta {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+    opacity: 0.86;
   }
 
   .content {
@@ -139,12 +148,6 @@
     filter: drop-shadow(0 2px 10px rgba(0,0,0,0.55));
   }
 
-  .meta {
-    color: var(--fg2);
-    font-size: 15px;
-    margin-bottom: 32px;
-  }
-
   .foot {
     margin-top: 64px;
     padding-top: 20px;
@@ -166,7 +169,7 @@
   }
 
   @media (max-width: 600px) {
-    .banner { height: 260px; }
+    .banner { height: 320px; }
     .banner-logo { top: 8px; left: 12px; }
     .banner-logo img { height: 28px; }
     .banner-overlay { transform: translateY(30px); }
@@ -186,7 +189,8 @@
   <div class="banner-overlay">
     <h1>mneme — Multi-Agent Vulnerability Research System with Structured Causal Memory</h1>
     <p>CyberGym Level 1 Evaluation Report</p>
-    <p class="authors">Seokjun Ryu, Seungdeok Roh, Chaewon Seo, Hongjang Yang, Donghyun Kim, Daeseon Choi</p>
+    <p class="authors">Seokjun&nbsp;Ryu, Seungdeok&nbsp;Roh, Chaewon&nbsp;Seo, Hongjang&nbsp;Yang, Donghyun&nbsp;Kim, Daeseon&nbsp;Choi</p>
+    <p class="banner-meta">Soongsil University AI Safety Center &middot; July 2026</p>
   </div>
 </div>
 
@@ -347,8 +351,6 @@
 </script>
 
 <div class="content">
-
-<p class="meta">Soongsil University AI Safety Center &middot; July 2026</p>
 
 <p>
   mneme solved 1,372 of 1,507 CyberGym Level 1 tasks in a single trial, achieving 91.0% pass@1. The CyberGym baseline using the same underlying model (Claude Opus 4.6) is 66.6%. The 24.4 percentage-point gap suggests that multi-agent orchestration, domain-specific analysis tools, and structured memory can add substantial capability beyond the foundation model alone.
