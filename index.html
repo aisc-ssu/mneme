@@ -70,6 +70,12 @@
     font-size: 15px;
     opacity: 0.75;
   }
+  .banner-overlay .authors {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    opacity: 0.72;
+  }
 
   .content {
     max-width: 720px;
@@ -160,7 +166,10 @@
   }
 
   @media (max-width: 600px) {
-    .banner { height: 200px; }
+    .banner { height: 260px; }
+    .banner-logo { top: 8px; left: 12px; }
+    .banner-logo img { height: 28px; }
+    .banner-overlay { transform: translateY(30px); }
     .content { padding: 32px 16px 60px; }
     table { font-size: 14px; }
     th, td { padding: 6px 8px; }
@@ -177,6 +186,7 @@
   <div class="banner-overlay">
     <h1>mneme — Multi-Agent Vulnerability Research System with Structured Causal Memory</h1>
     <p>CyberGym Level 1 Evaluation Report</p>
+    <p class="authors">Seokjun Ryu, Seungdeok Roh, Chaewon Seo, Hongjang Yang, Donghyun Kim, Daeseon Choi</p>
   </div>
 </div>
 
