@@ -68,22 +68,27 @@
   }
   .banner-overlay p {
     margin-bottom: 0;
-    font-size: 17px;
-    font-weight: 500;
-    opacity: 0.9;
-    text-shadow: 0 1px 10px rgba(0,0,0,0.65);
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    opacity: 1;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9);
   }
   .banner-overlay .authors {
-    margin-top: 10px;
-    font-size: 15px;
-    line-height: 1.5;
-    opacity: 0.92;
+    margin-top: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.45;
+    color: #fff;
+    opacity: 1;
   }
   .banner-overlay .banner-meta {
-    margin-top: 8px;
-    font-size: 14px;
+    margin-top: 10px;
+    font-size: 17px;
+    font-weight: 600;
     line-height: 1.4;
-    opacity: 0.86;
+    color: #fff;
+    opacity: 1;
   }
 
   .content {
@@ -169,10 +174,13 @@
   }
 
   @media (max-width: 600px) {
-    .banner { height: 320px; }
+    .banner { height: 380px; }
     .banner-logo { top: 8px; left: 12px; }
     .banner-logo img { height: 28px; }
-    .banner-overlay { transform: translateY(30px); }
+    .banner-overlay { transform: translateY(20px); padding: 0 12px; }
+    .banner-overlay p { font-size: 19px; }
+    .banner-overlay .authors { font-size: 17px; }
+    .banner-overlay .banner-meta { font-size: 15px; }
     .content { padding: 32px 16px 60px; }
     table { font-size: 14px; }
     th, td { padding: 6px 8px; }
